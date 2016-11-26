@@ -1,0 +1,55 @@
+http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/p0054r0.html
+https://isocpp.org/files/papers/N4402.pdf
+
+Type T can be:
+- awaitable
+    needs to support:
+        - await_ready
+        - await_suspend
+        - await_resume
+        - await_transform?
+- return type of a coroutine
+    promise_type
+        - get_return_object -> T
+        - initial_suspend
+        - final_suspend
+        - return_value/return_void
+        - yield_value
+        - set_exception
+
+Return type of a coroutine can be:
+- aware of a corutine (like generator) and own it, also destroy it in destructor
+- not aware of the coroutine (like std::future) and not own it. It will be destroyed after final suspend. ???
+
+operator await - deprecated
+for await ?
+auto await
+
+default-generator-type
+default-task-type
+default-async-generator-type
+
+generator
+    - can be coroutine result type
+    - but cannot be awaited on!
+    - exposes begin() and end() instead
+    
+
+await_transform - proposed extension to allow for changing awaited types based on return type of coroutine?
+Can be used to implement cancelling of coroutine.
+   
+std::
+resumable_handle
+<P>
+
+Exceptions:
+    If promise does not provide set_exception, unhandled exceptions will propagate from a resumable functions normally.
+    Give an example.
+    
+    The await operator shall not be invoked in a catch block of a try statement
+    
+
+Moving or copying coroutine state is unsafe. Consider the following coroutine:
+generator<char> hello(string S) { for(ch: S) yield ch; }
+https://blogs.msdn.microsoft.com/vcblog/2014/11/12/resumable-functions-in-c/
+That said, for simple coroutines you can implement cloning with what you already have in Dev14 preview. You can define unsafe_generator<T> that will have a copy constructor and copy assignment. Since you can control the allocator you can determine the size of the block that coroutine pointer points to (resumable_handle::to_address()). You can allocate another block of the same size, memcpy the data and recreate coroutine handle for it using resumable_handle::from_address. Just make sure that the pointer you passed is at the same offset from the beginning of the block as the original pointer is.
