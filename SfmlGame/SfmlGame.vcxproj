@@ -88,7 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>F:\VSProjects\Awaits\Game;F:\VSProjects\boost_1_59_0;F:\VSProjects\Awaits\SFML-2.4.0-windows-vc14-32-bit\SFML-2.4.0\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Game;..\..\boost_1_59_0;..\SFML-2.4.0-windows-vc14-32-bit\SFML-2.4.0\include</AdditionalIncludeDirectories>
       <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
