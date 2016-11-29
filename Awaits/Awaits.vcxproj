@@ -117,6 +117,7 @@
   <ItemGroup>
     <ClCompile Include="Awaits.cpp" />
     <ClCompile Include="Awaits2.cpp" />
+    <ClCompile Include="Links.cpp" />
     <ClCompile Include="SimpleGenerator.cpp" />
     <ClCompile Include="Trash.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

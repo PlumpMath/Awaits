@@ -27,5 +27,8 @@
     <ClCompile Include="Trash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Links.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

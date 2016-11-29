@@ -46,7 +46,6 @@ Coro threeParts()
     co_await suspend_always{};
 
     cout << "After second resume." << endl;
-    co_return;
 }
 
 int main()
@@ -60,7 +59,5 @@ int main()
     coro.m_coro.resume();
     coro.m_coro.resume();
     cout << "Done? " << coro.m_coro.done() << endl;
-    coro.m_coro.resume();
-    coro.m_coro.resume();
     coro.m_coro.destroy();
 }
