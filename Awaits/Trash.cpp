@@ -536,7 +536,7 @@ _Uty && await_transform(_Uty &&_Whatever)
 }
 
 
-template <typename Ret, typename... Ts>
+template <typename Ret, typename... Args>
 struct coroutine_traits
 {
     using promise_type = ...
@@ -561,3 +561,65 @@ struct coroutine_traits<MyType, int, string>
 MyType coro();
 
 MyType coro(int, string);
+
+struct resume_on_ui_thread;
+struct resume_on_thread_pool;
+
+future<void> doUIWork()
+{
+    button.Text = "Working.";
+
+    co_await resume_on_thread_pool {};
+
+    doHeavyComputations();
+
+    co_await resume_on_ui_thread {};
+
+    button.Text = "Done!";
+}
+
+struct CancelledException;
+
+struct promise_type
+{
+    //...
+
+    bool is_cancelled;
+
+    //...
+
+    template<typename T>
+    T& await_transform(T& awaitable)
+    {
+        if (is_cancelled)
+            throw CancelledException();
+
+        return awaitable;
+    }
+};
+
+auto operator co_await(std::chrono::system_clock::duration duration)
+{
+    class awaiter
+    {
+        std::chrono::system_clock::duration duration;
+
+    public:
+
+        explicit awaiter(std::chrono::system_clock::duration d) : duration(d) {}
+
+        bool await_ready() const
+        {
+            return false;
+        }
+
+        void await_suspend(std::experimental::coroutine_handle<> coro)
+        {
+            SetTimer(d, [coro] { coro.resume(); });
+        }
+
+        void await_resume() {}
+    };
+
+    return awaiter{ duration };
+}
