@@ -534,3 +534,30 @@ _Uty && await_transform(_Uty &&_Whatever)
                   "co_await is not supported in coroutines of type std::experiemental::generator");
     return _STD forward<_Uty>(_Whatever);
 }
+
+
+template <typename Ret, typename... Ts>
+struct coroutine_traits
+{
+    using promise_type = ...
+};
+
+struct Promise0;
+struct PromiseIS;
+
+
+template<>
+struct coroutine_traits<MyType>
+{
+    using promise_type = Promise0;
+};
+
+template<>
+struct coroutine_traits<MyType, int, string>
+{
+    using promise_type = PromiseIS;
+};
+
+MyType coro();
+
+MyType coro(int, string);
