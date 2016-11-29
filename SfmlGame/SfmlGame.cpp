@@ -16,6 +16,7 @@
 
 using namespace std::chrono_literals;
 
+sf::VideoMode desktopMode;
 sf::RenderWindow window;
 sf::Sound ballSound;
 sf::Texture texture;
@@ -28,6 +29,9 @@ sf::Sprite fsprite;
 sf::Vector2i guyFrameSize;
 
 std::vector<Guy> guys { Guy({300, 200}), Guy({600, 300}), Guy({450, 400}), Guy({500, 350}) };
+
+float scaleX;
+float scaleY;
 
 void updateSprite(const Guy& guy, sf::Sprite& sprite)
 {
@@ -81,7 +85,7 @@ void loadForest()
     fsprite.setTexture(ftexture);
 
     auto size = ftexture.getSize();
-    fsprite.setScale(800.0f / size.x, 600.0f / size.y);
+    fsprite.setScale(static_cast<float>(desktopMode.width) / size.x, static_cast<float>(desktopMode.height) / size.y);
 }
 
 sfuture<void> walkTo(Guy& guy, sf::Vector2f target)
@@ -161,10 +165,10 @@ sfuture<void> ai(Guy& guy)
                 co_await think(guy);
                 break;
             case 1:
-                co_await walkTo(guy, guy.position + sf::Vector2f{random(-100.0f, 100.0f), random(-50.0f, 50.0f)});
+                co_await walkTo(guy, guy.position + sf::Vector2f{random(-100.0f, 100.0f) * scaleX, random(-50.0f, 50.0f) * scaleY});
                 break;
             case 2:
-                co_await walkTo(guy, sf::Vector2f{random(100.0f, 700.0f), random(100.0f, 500.0f)});
+                co_await walkTo(guy, sf::Vector2f{random(100.0f, 700.0f) * scaleX, random(100.0f, 500.0f) * scaleY});
                 break;
             case 3:
                 co_await wait_some_time(std::chrono::seconds(random(1, 3)));
@@ -187,15 +191,23 @@ int main()
     std::srand(static_cast<unsigned int>(std::time(NULL)));
 
     // Define some constants
-    const float pi = 3.14159f;
-    const int gameWidth = 800;
-    const int gameHeight = 600;
     sf::Vector2f paddleSize(25, 100);
     float ballRadius = 10.f;
 
     // Create the window of the application
-    window.create(sf::VideoMode(gameWidth, gameHeight, 32), "Coroutine Pirates", sf::Style::Titlebar | sf::Style::Close);
+    //window.create(sf::VideoMode(gameWidth, gameHeight, 32), "Coroutine Pirates", sf::Style::Titlebar | sf::Style::Close);
+    desktopMode = sf::VideoMode::getDesktopMode();
+    scaleX = desktopMode.width / 800.0f;
+    scaleY = desktopMode.height / 600.0f;
+    //window.create(desktopMode, "Coroutine Pirates", sf::Style::Fullscreen);
+    window.create(desktopMode, "Coroutine Pirates", sf::Style::None);
     window.setVerticalSyncEnabled(true);
+
+    for (auto& g : guys)
+    {
+        g.position.x *= scaleX;
+        g.position.y *= scaleY;
+    }
 
     // Create the left paddle
     sf::RectangleShape leftPaddle;

@@ -238,7 +238,7 @@ future<int> tcp_reader(int total)
     {
         auto bytesRead = co_await conn.Read(buf, sizeof(buf));
         total -= bytesRead;
-        if (total <= 0 || bytesRead == 0) return total;
+        if (total <= 0 || bytesRead == 0) co_return total;
     }
 }
 
@@ -484,8 +484,8 @@ struct promise_type
 
 generator<int> produce()
 {
-    vector<int> a{ 1, 2, 3 };
-    for (auto i : a)
+    vector<int> vec{ 1, 2, 3 };
+    for (auto i : vec)
         co_yield i;
 }
 
@@ -498,7 +498,9 @@ generator<int> years()
 generator<int> more_years()
 {
     co_yield 2009;
+
     co_yield years();
+
     co_yield 2016;
 }
 
@@ -514,4 +516,21 @@ generator<int> years()
 	int start = get_year().get();
 	for (int i = start; i <= 2025; ++i)
 		co_yield i;
+}
+
+template<typename T>
+struct async_generator;
+
+async_generator<int> squares(async_generator<int> gen)
+{
+    for co_await (auto v : gen)
+        co_yield v * v;
+}
+
+template <typename _Uty>
+_Uty && await_transform(_Uty &&_Whatever)
+{
+    static_assert(_Always_false<_Uty>::value,
+                  "co_await is not supported in coroutines of type std::experiemental::generator");
+    return _STD forward<_Uty>(_Whatever);
 }
